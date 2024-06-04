@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+        }
+
+        header {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            background-color: black;
+            color: white;
+        }
+
+        header .logo {
+            font-size: 24px;
+        }
+
+        .logo img {
+            width: 70px; /* Задайте нужную ширину */
+            height: auto; /* Высота автоматически рассчитается пропорционально ширине */
+        }
+
+        header nav ul {
+            list-style: none;
+            display: flex;
+            gap: 20px;
+        }
+
+        header nav ul li {
+            display: inline;
+        }
+
+        header nav ul li a {
+            color: white;
+            text-decoration: none;
+        }
+
+        header nav ul li a:hover {
+            text-decoration: underline;
+        }
+
+        .login-form, .profile {
+            max-width: 500px;
+            margin: 50px auto;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .login-form h1, .profile h1 {
+            text-align: center;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            font-weight: bold;
+        }
+
+        input[type="text"],
+        input[type="email"],
+        input[type="password"],
+        input[type="date"],
+        input[type="time"],
+        select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        button {
+            width: 100%;
+            padding: 10px;
+            background-color: black;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #333;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <nav>
+            <ul>
+                <li><a href="../tilda/page48758861.html">Home</a></li>
+                <li><a href="./login.html">Login</a></li>
+                <li><a href="./register.html">Register</a></li>
+            </ul>
+        </nav>
+    </header>
+    <div class="login-form">
+        <h1>Login</h1>
+        <form id="loginForm" action="/login" method="post">
+            <div class="form-group">
+                <label for="email">Email</label>
+                <input type="email" id="email" name="email" required>
+            </div>
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" name="password" required>
+            </div>
+            <button type="submit">Login</button>
+        </form>
+    </div>
+
+    <script>
+        document.getElementById("loginForm").addEventListener("submit", function(event) {
+            event.preventDefault(); // Предотвращаем стандартную отправку формы
+
+            var formData = new FormData(this); // Создаем объект FormData из формы
+            var xhr = new XMLHttpRequest(); // Создаем новый объект XMLHttpRequest
+
+            xhr.open("POST", "{{ url_for('login') }}", true); 
+            xhr.onreadystatechange = function() { 
+                if (xhr.readyState === XMLHttpRequest.DONE) { 
+                    if (xhr.status === 200) { // Если запрос был успешным
+                        var response = JSON.parse(xhr.responseText); // Разбираем ответ JSON
+                        if (response.success) { // Если вход успешен
+                            window.location.href = "{{ url_for('profile') }}"; // Перенаправляем на страницу профиля
+                        } else {
+                            alert(response.error); // Если произошла ошибка, показываем ее пользователю
+                        }
+                    } else {
+                        alert("Ошибка: " + xhr.status); // Если произошла ошибка на сервере, показываем ее пользователю
+                    }
+                }
+            };
+            xhr.send(formData); // Отправляем данные формы на сервер
+        });
+    </script>
+</body>
+</html>

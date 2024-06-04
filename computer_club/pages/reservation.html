@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Бронирование</title>
+    <link rel="stylesheet" href="../styles/res_styles.css">
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            var today = new Date();
+            var threeDaysLater = new Date();
+            threeDaysLater.setDate(today.getDate() + 6);
+
+            var dateInput = document.getElementById('date');
+            dateInput.setAttribute('min', formatDate(today));
+            dateInput.setAttribute('max', formatDate(threeDaysLater));
+
+            var timeInput = document.getElementById('time');
+            timeInput.addEventListener('input', function() {
+                var timeParts = this.value.split(':');
+                var minutes = parseInt(timeParts[1]);
+
+                if (minutes < 15) {
+                    timeInput.value = timeParts[0] + ':00'; // Устанавливаем 00 минут
+                } else if (minutes >= 15 && minutes < 45) {
+                    timeInput.value = timeParts[0] + ':30'; // Устанавливаем 30 минут
+                } else {
+                    timeInput.value = (parseInt(timeParts[0]) + 1) + ':00'; // Устанавливаем следующий час с 00 минут
+                }
+            });
+
+            var placeSelect = document.getElementById('place');
+            var seatSelect = document.getElementById('seat');
+            var hoursSelect = document.getElementById('hours');
+
+            placeSelect.addEventListener('change', function() {
+                var placeType = this.value;
+                if (placeType === 'PC Общий зал') {
+                    populateSeats(15);
+                } else if (placeType === 'PC VIP зал') {
+                    populateSeats(5);
+                } else {
+                    populateSeats(1);
+                }
+            });
+
+            function populateSeats(maxSeat) {
+                seatSelect.innerHTML = '';
+                for (var i = 1; i <= maxSeat; i++) {
+                    var option = document.createElement('option');
+                    option.text = i;
+                    option.value = i;
+                    seatSelect.add(option);
+                }
+            }
+
+            for (var i = 1; i <= 8; i++) {
+                var option = document.createElement('option');
+                option.text = i;
+                option.value = i;
+                hoursSelect.add(option);
+            }
+        });
+
+        function formatDate(date) {
+            var dd = String(date.getDate()).padStart(2, '0');
+            var mm = String(date.getMonth() + 1).padStart(2, '0'); // January is 0!
+            var yyyy = date.getFullYear();
+
+            return yyyy + '-' + mm + '-' + dd;
+        }
+    </script>
+</head>
+<body>
+    <header>
+        <div class="logo">
+            <img src="../src/logo.png" alt="Логотип">
+        </div>
+        <nav>
+            <ul>
+                <li><a href="../tilda/page48758861.html">Главная страница</a></li>
+                <li><a href="../tilda/page48760289.html">Цены и акции</a></li>
+                <li><a href="./reservation.html">Бронирование</a></li>
+                <li><a href="./map.html">Карта клуба</a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        <section class="hero">
+            <div class="hero-text">Бронирование</div>
+        </section>
+        <section class="booking-form">
+            <h1>Форма бронирования</h1>
+            <form id="booking-form">
+                <div class="form-group">
+                    <label for="phone">Номер телефона или почта зарегестрированного аккаунта:</label>
+                    <input type="text" id="phone" name="phone" required>
+                </div>
+                <div class="form-group">
+                    <label for="date">Дата:</label>
+                    <input type="date" id="date" name="date" required>
+                </div>
+                <div class="form-group">
+                    <label for="time">Время:</label>
+                    <input type="time" id="time" name="time" required>
+                </div>
+                <div class="form-group">
+                    <label for="place">Место:</label>
+                    <select id="place" name="place" required>
+                        <option value="PC Общий зал">PC Общий зал</option>
+                        <option value="PC VIP зал">PC VIP зал</option>
+                        <option value="PS 4">PS 4</option>
+                        <option value="PS 5">PS 5</option>
+                        <option value="Стримерская">Стримерская</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="seat">Место в зале:</label>
+                    <select id="seat" name="seat" required>
+                        <option value="">Выберите место</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="hours">Количество часов бронирования:</label>
+                    <select id="hours" name="hours" required>
+                    </select>
+                </div>
+                <button type="submit">Забронировать</button>
+            </form>
+        </section>
+    </main>
+    <script>
+        document.getElementById('booking-form').addEventListener('submit', function(event) {
+            event.preventDefault();
+            var formData = new FormData(this);
+            fetch('http://localhost:5000/submit-booking', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('Бронирование успешно выполнено. Будем ждать Вас!');
+                } else {
+                    alert('Ошибка: ' + data.error);
+                }
+            })
+            .catch(error => console.error('Ошибка:', error));
+        });
+    </script>
+</body>
+</html>
