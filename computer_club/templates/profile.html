@@ -6,123 +6,174 @@
     <title>Profile</title>
     <style>
         body {
-    margin: 0;
-    font-family: Arial, sans-serif;
-}
-
-header {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    padding: 20px;
-    background-color: black;
-    color: white;
-}
-
-header .logo {
-    font-size: 24px;
-}
-
-.logo img {
-    width: 70px; /* Задайте нужную ширину */
-    height: auto; /* Высота автоматически рассчитается пропорционально ширине */
-}
-
-header nav ul {
-    list-style: none;
-    display: flex;
-    gap: 20px;
-}
-
-header nav ul li {
-    display: inline;
-}
-
-header nav ul li a {
-    color: white;
-    text-decoration: none;
-}
-
-header nav ul li a:hover {
-    text-decoration: underline;
-}
-
-.login-form, .profile {
-    max-width: 500px;
-    margin: 50px auto;
-    padding: 20px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
-.login-form h1, .profile h1 {
-    text-align: center;
-}
-
-.form-group {
-    margin-bottom: 20px;
-}
-
-label {
-    display: block;
-    font-weight: bold;
-}
-
-input[type="text"],
-input[type="email"],
-input[type="password"],
-input[type="date"],
-input[type="time"],
-select {
-    width: 100%;
-    padding: 10px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-}
-
-button {
-    width: 100%;
-    padding: 10px;
-    background-color: black;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-}
-
-button:hover {
-    background-color: #333;
-}
-
+            margin: 0;
+            font-family: Arial, sans-serif;
+        }
+        header {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            background-color: black;
+            color: white;
+        }
+        header .logo {
+            font-size: 24px;
+        }
+        .logo img {
+            width: 70px;
+            height: auto;
+        }
+        header nav ul {
+            list-style: none;
+            display: flex;
+            gap: 20px;
+        }
+        header nav ul li {
+            display: inline;
+        }
+        header nav ul li a {
+            color: white;
+            text-decoration: none;
+        }
+        header nav ul li a:hover {
+            text-decoration: underline;
+        }
+        .login-form, .profile {
+            max-width: 700px;
+            margin: 50px auto;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        .login-form h1, .profile h1 {
+            text-align: center;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            font-weight: bold;
+        }
+        input[type="text"],
+        input[type="email"],
+        input[type="password"],
+        input[type="date"],
+        input[type="time"],
+        select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        button {
+            width: 100%;
+            padding: 10px;
+            background-color: black;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #333;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        table, th, td {
+            border: 1px solid #ccc;
+        }
+        th, td {
+            padding: 10px;
+            text-align: left;
+        }
     </style>
 </head>
 <body>
     <header>
         <nav>
             <ul>
-                <li><a href="file:////home/kirmur/computer_club/tilda/page48758861.html">Home</a></li>
-                <li><a href="/profile">Profile</a></li>
-                <li><a href="/logout">Logout</a></li>
+                <li><a href="http://localhost:3000/tilda/page48758861.html">Войти</a></li>
+                <li><a href="/profile">Профиль</a></li>
+                <li><a href="/logout">Выйти</a></li>
             </ul>
         </nav>
     </header>
     <div class="profile">
-        <h1>Welcome, {{ username }}</h1>
-        <p>Balance: {{ balance }}</p>
+        <h1>Привет, {{ username }}!</h1>
         
-        {% if is_admin %}
-        <p>Hello Admin!</p>
+        {% if is_banned %}
+        <p>Ваш аккаунт находится в бане до {{ end_date }}</p>
         {% endif %}
-        
-        <h2>Future Bookings</h2>
+
+        {% if is_admin %}
+        <h2>Список пользователей</h2>
+        <table>
+            <tr>
+                <th>ID</th>
+                <th>Имя</th>
+                <th>Фамилия</th>
+                <th>Email</th>
+                <th>Баланс</th>
+            </tr>
+            {% for client in clients %}
+            <tr>
+                <td>{{ client[0] }}</td>
+                <td>{{ client[1] }}</td>
+                <td>{{ client[2] }}</td>
+                <td>{{ client[3] }}</td>
+                <td>{{ client[4] }}</td>
+            </tr>
+            {% endfor %}
+        </table>
+    
+        <h3>Пользователи в бане</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Имя</th>
+                    <th>Email</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for client in banned_clients %}
+                    <tr>
+                        <td>{{ client[0] }}</td>
+                        <td>{{ client[2] }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    
+        <h2>Покупки пользователей</h2>
+        <table>
+            <tr>
+                <th>Имя пользователя</th>
+                <th>Название услуги</th>
+                <th>Стоимость</th>
+            </tr>
+            {% for purchase in all_purchases %}
+            <tr>
+                <td>{{ purchase.username }}</td>
+                <td>{{ purchase.service_name }}</td>
+                <td>{{ purchase.price }}</td>
+            </tr>
+            {% endfor %}
+        </table>
+        {% else %}
+        <p>Баланс: {{ balance }}</p>
+        <h2>Ближайшие брони</h2>
         <ul>
             {% for booking in future_bookings %}
-            <li>Booking ID: {{ booking[0] }}, Equipment ID: {{ booking[1] }}, Date and Time: {{ booking[2] }}</li>
+            <li>Booking ID: {{ booking[0] }}, Оборудование: {{ booking[1] }}, Дата и время: {{ booking[2] }}</li>
             {% endfor %}
         </ul>
-    </div>
-    
-    
+        {% endif %}
+    </div>    
 </body>
 </html>
