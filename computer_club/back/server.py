@@ -247,17 +247,25 @@ def submit_booking():
             seat = 23
         else:
             return jsonify({"success": False, "error": "Выбрано неверное место."})
-        
+
         # Проверка наличия записей в базе данных перед добавлением новой брони
         query_check = """
-            SELECT 1 FROM computer_club.reservation
+            SELECT date_and_time_nachala, date_and_time_konec 
+            FROM computer_club.reservation
             WHERE id_oborud = %s AND 
-                  (date_and_time_nachala <= %s AND date_and_time_konec >= %s)
+                  ((date_and_time_nachala <= %s AND date_and_time_konec >= %s) OR
+                   (date_and_time_nachala <= %s AND date_and_time_konec >= %s) OR
+                   (date_and_time_nachala >= %s AND date_and_time_nachala <= %s) OR
+                   (date_and_time_konec >= %s AND date_and_time_konec <= %s))
         """
-        cur.execute(query_check, (seat, start_datetime, end_datetime))
-        print(cur.mogrify(query_check, (seat, start_datetime, end_datetime)))
-        if cur.fetchone():
-            return jsonify({"success": False, "error": "Это место уже забронировано на указанное время."})
+        cur.execute(query_check, (seat, start_datetime, end_datetime, end_datetime, start_datetime, start_datetime, end_datetime, start_datetime, end_datetime))
+        existing_booking = cur.fetchone()
+        if existing_booking:
+            existing_start, existing_end = existing_booking
+            return jsonify({
+                "success": False,
+                "error": f"Это место уже забронировано на указанное время: {existing_start.strftime('%Y-%m-%d %H:%M')} - {existing_end.strftime('%Y-%m-%d %H:%M')}"
+            })
 
         if email:
             cur.execute("SELECT id_user FROM computer_club.users WHERE email = %s", (email,))
@@ -265,7 +273,6 @@ def submit_booking():
             if user_id:
                 user_id = user_id[0]
                 is_banned = check_ban_status(user_id)
-                print("wehfowiehfwuehfuf")
                 if is_banned:
                     return jsonify({"success": False, "error": "Вы находитесь в бане и не можете забронировать место."})
             else:
@@ -291,9 +298,9 @@ def submit_booking():
         conn.commit()
 
         if phone:
-            return jsonify({"success": True, "message": f"Бронирование выполнено успешно."})
+            return jsonify({"success": True, "message": "Бронирование выполнено успешно."})
         elif email:
-            return jsonify({"success": True, "message": f"Бронирование выполнено успешно."})
+            return jsonify({"success": True, "message": "Бронирование выполнено успешно."})
 
     except Exception as e:
         print(f"Error: {e}")
@@ -432,6 +439,7 @@ def get_future_bookings(email):
     finally:
         cur.close()
         conn.close()
+        
 
 if __name__ == '__main__':
     app.run(debug=True)
