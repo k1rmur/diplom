@@ -17,17 +17,16 @@
 
             var timeInput = document.getElementById('time');
             timeInput.addEventListener('input', function() {
-                var timeParts = this.value.split(':');
-                var minutes = parseInt(timeParts[1]);
+            var timeParts = this.value.split(':');
+            var minutes = parseInt(timeParts[1]);
 
-                if (minutes < 15) {
-                    timeInput.value = timeParts[0] + ':00'; // Устанавливаем 00 минут
-                } else if (minutes >= 15 && minutes < 45) {
-                    timeInput.value = timeParts[0] + ':30'; // Устанавливаем 30 минут
-                } else {
-                    timeInput.value = (parseInt(timeParts[0]) + 1) + ':00'; // Устанавливаем следующий час с 00 минут
-                }
+            // Округляем минуты до ближайшего десятка
+            var roundedMinutes = Math.round(minutes / 10) * 10;
+
+            // Устанавливаем округленные минуты в поле времени
+            timeInput.value = timeParts[0] + ':' + (roundedMinutes < 10 ? '0' : '') + roundedMinutes;
             });
+
 
             var placeSelect = document.getElementById('place');
             var seatSelect = document.getElementById('seat');
@@ -78,11 +77,11 @@
         </div>
         <nav>
             <ul>
-                <li><a href="../tilda/page48758861.html">Главная страница</a></li>
-                <li><a href="../tilda/page48760289.html">Цены и акции</a></li>
-                <li><a href="./reservation.html">Бронирование</a></li>
+                <li><a href="http://localhost:3000/main">Главная страница</a></li>
+                <li><a href="http://localhost:3000/promotions">Цены и акции</a></li>
                 <li><a href="./map.html">Карта клуба</a></li>
                 <li><a href="http://localhost:5000/logout">Войти</a></li>
+                <li><a href="http://localhost:3000/register">Регистрация</a></li>
             </ul>
         </nav>
     </header>
@@ -94,7 +93,7 @@
             <h1>Форма бронирования</h1>
             <form id="booking-form">
                 <div class="form-group">
-                    <label for="phone">Номер телефона или почта зарегестрированного аккаунта:</label>
+                    <label for="phone">Номер телефона или почта зарегистрированного аккаунта:</label>
                     <input type="text" id="phone" name="phone" required>
                 </div>
                 <div class="form-group">

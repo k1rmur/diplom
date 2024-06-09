@@ -46,7 +46,7 @@ def index():
 def login():
     if request.method == 'POST':
         data = request.get_json()
-        print(data)  # Печать всего JSON объекта
+        print(data)
         email = data.get('email')
         password = data.get('password')
         try:
@@ -97,9 +97,11 @@ def profile():
         balance = None
         future_bookings = []
         banned_clients = []
+        admin_future_bookings = []
 
 # Проверяем, является ли пользователь администратором
         if is_admin:
+            admin_future_bookings = get_admin_future_bookings()
             # Получаем всех забаненных пользователей
             cur.execute("SELECT name, familia, email FROM computer_club.users WHERE id_user IN (SELECT id_user FROM computer_club.bans)")
             banned_clients = cur.fetchall()
@@ -152,7 +154,7 @@ def profile():
         conn.close()
 
         # Рендерим шаблон 'profile.html' и передаем в него необходимые данные
-        return render_template('profile.html', username=user.name, balance=balance, future_bookings=future_bookings, is_admin=is_admin, clients=clients, all_purchases=all_purchases, is_banned=is_banned, end_date=end_date, banned_clients=banned_clients)
+        return render_template('profile.html', username=user.name, balance=balance, future_bookings=future_bookings, is_admin=is_admin, clients=clients, all_purchases=all_purchases, is_banned=is_banned, end_date=end_date, banned_clients=banned_clients, admin_future_bookings=admin_future_bookings)
 
     except Exception as e:
         # Обрабатываем возможные ошибки и возвращаем JSON-ответ с сообщением об ошибке
@@ -350,6 +352,37 @@ def register():
         cur.close()
         conn.close()
 
+
+def get_admin_future_bookings():
+    try:
+        conn = psycopg2.connect(database="computer_club", user="postgres", password="15964", host="localhost", port="5432")
+        cur = conn.cursor()
+        
+        # Получаем все будущие бронирования
+        cur.execute("""
+    SELECT u.email, u.familia, s.place, r.date_and_time_nachala, r.date_and_time_konec
+    FROM computer_club.reservation r
+    JOIN computer_club.users u ON r.id_user = u.id_user
+    JOIN computer_club.seats_halls s ON r.id_oborud = CAST(s.place AS INTEGER)
+    WHERE r.date_and_time_nachala >= CURRENT_DATE
+    ORDER BY r.date_and_time_nachala
+""")
+
+
+        
+        bookings = cur.fetchall()
+        
+        return bookings
+        
+    except Exception as e:
+        print(f"Error: {e}")
+        return []
+
+    finally:
+        cur.close()
+        conn.close()
+
+
 def get_future_bookings(email):
     try:
         conn = psycopg2.connect(database="computer_club", user="postgres", password="15964", host="localhost", port="5432")
@@ -361,14 +394,36 @@ def get_future_bookings(email):
         
         # Получаем все будущие брони пользователя
         cur.execute("""
-            SELECT id_bron, id_oborud, date_and_time_nachala
+            SELECT id_bron, id_oborud, date_and_time_nachala, date_and_time_konec
             FROM computer_club.reservation
             WHERE id_user = %s AND date_and_time_nachala > NOW()
             ORDER BY date_and_time_nachala
         """, (user_id,))
         
         bookings = cur.fetchall()
-        return bookings
+        updated_bookings = []
+        for booking in bookings:
+            id_oborud = booking[1]  # Получаем текущее значение ID оборудования
+            
+            # Проверяем условие и устанавливаем новое значение ID оборудования
+            if 0 <= id_oborud <= 15:
+                new_id_oborud = 'PC, Общий зал'
+            elif 16 <= id_oborud <= 20:
+                new_id_oborud = 'PC, VIP зал'
+            elif id_oborud == 21:
+                new_id_oborud = 'PS 4'
+            elif id_oborud == 22:
+                new_id_oborud = 'PS 5'
+            elif id_oborud == 23:
+                new_id_oborud = 'Стримерская'
+            else:
+                new_id_oborud = '12312312'
+            
+            # Добавляем обновленный кортеж в новый список
+            updated_booking = booking[:1] + (new_id_oborud,) + booking[2:]  # Заменяем ID оборудования
+            updated_bookings.append(updated_booking)
+        
+        return updated_bookings
         
     except Exception as e:
         print(f"Error: {e}")

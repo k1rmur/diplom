@@ -98,7 +98,7 @@
     <header>
         <nav>
             <ul>
-                <li><a href="http://localhost:3000/tilda/page48758861.html">Войти</a></li>
+                <li><a href="http://localhost:3000/main">Главная страница</a></li>
                 <li><a href="/profile">Профиль</a></li>
                 <li><a href="/logout">Выйти</a></li>
             </ul>
@@ -149,28 +149,31 @@
                 {% endfor %}
             </tbody>
         </table>
-    
-        <h2>Покупки пользователей</h2>
+
+        <h2>Будущие бронирования:</h2>
         <table>
             <tr>
-                <th>Имя пользователя</th>
-                <th>Название услуги</th>
-                <th>Стоимость</th>
+                <th>Пользователь</th>
+                <th>Место</th>
+                <th>Дата начала</th>
+                <th>Дата окончания</th>
             </tr>
-            {% for purchase in all_purchases %}
-            <tr>
-                <td>{{ purchase.username }}</td>
-                <td>{{ purchase.service_name }}</td>
-                <td>{{ purchase.price }}</td>
-            </tr>
+            {% for booking in admin_future_bookings %}
+                <tr>
+                    <td>{{ booking[0] }}</td>
+                    <td>{{ booking[2] }}</td>
+                    <td>{{ booking[3] }}</td>
+                    <td>{{ booking[4] }}</td>
+                </tr>
             {% endfor %}
         </table>
+
         {% else %}
         <p>Баланс: {{ balance }}</p>
-        <h2>Ближайшие брони</h2>
+        <h2>Ближайшие брони:</h2>
         <ul>
             {% for booking in future_bookings %}
-            <li>Booking ID: {{ booking[0] }}, Оборудование: {{ booking[1] }}, Дата и время: {{ booking[2] }}</li>
+            <li> Место: {{ booking[1] }}, Забронировано с {{ booking[2] }}  до  {{ booking[3] }} </li>
             {% endfor %}
         </ul>
         {% endif %}

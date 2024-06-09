@@ -13,18 +13,14 @@ app.use(bodyParser.json());
 // Настройка статических файлов
 app.use(express.static(path.join(__dirname, 'pages')));
 app.use('/styles', express.static(path.join(__dirname, 'styles')));
-app.use('/tilda/css', express.static(path.join(__dirname, 'tilda', 'css')));
-app.use('/tilda', express.static(path.join(__dirname, 'tilda')));
+app.use('/pages_/css', express.static(path.join(__dirname, 'pages_', 'css')));
 app.use('/src', express.static(path.join(__dirname, 'src')));
 
 // Настройка маршрутов для рендеринга страниц
 app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, 'pages', 'login.html'));
+  res.sendFile(path.join(__dirname, 'pages', 'main.html'));
 });
 
-app.get('/about', (req, res) => {
-  res.sendFile(path.join(__dirname, 'tilda', 'page48758861.html'));
-});
 
 app.get('/profile', (req, res) => {
     res.sendFile(path.join(__dirname, 'pages', 'profile.html'));
@@ -42,8 +38,12 @@ app.get('/reservation', (req, res) => {
     res.sendFile(path.join(__dirname, 'pages', 'reservation.html'));
 });
 
+app.get('/main', (req, res) => {
+  res.sendFile(path.join(__dirname, 'pages', 'main.html'));
+});
+
 app.get('/promotions', (req, res) => {
-    res.sendFile(path.join(__dirname, 'tilda', 'page48760289.html'));
+    res.sendFile(path.join(__dirname, 'pages', 'promotions.html'));
 });
 
 app.post('/login', (req, res) => {

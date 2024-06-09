@@ -47,6 +47,14 @@ header nav ul li a {
     font-size: 36px;
 }
 
+.hero-text {
+    font-size: 48px; /* Увеличиваем размер шрифта */
+    font-weight: bold; /* Делаем текст жирным */
+    text-shadow: 5px 5px 5px rgba(0, 0, 0, 0.5); /* Добавляем тень */
+    padding: 10px 20px; /* Добавляем отступы */
+    border-radius: 10px; /* Делаем закругленные углы */
+}
+
 .map {
     position: relative;
     padding: 20px;
